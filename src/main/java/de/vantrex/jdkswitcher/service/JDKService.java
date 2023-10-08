@@ -11,24 +11,16 @@ import de.vantrex.jdkswitcher.jdk.parser.AmazonCorrettoOpenJDK;
 import de.vantrex.jdkswitcher.jna.NativeHook;
 import de.vantrex.jdkswitcher.util.Tuple;
 import de.vantrex.jdkswitcher.util.VersionComparator;
-import org.apache.commons.io.FileSystem;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.net.URI;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
-import java.security.CodeSource;
-import java.security.ProtectionDomain;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Objects;
@@ -61,15 +53,19 @@ public class JDKService {
             System.exit(0);
             throw new RuntimeException(e);
         }
-        this.init();
         this.configurationProvider.save();
         this.directoryService = new DirectoryService(this);
-        // Pfad zur JAR-Datei erhalten
+        this.copyNativeDll();
+        this.init();
+    }
+
+    private void copyNativeDll() {
         String jarPath = JDKService.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 
         String resourceName = "SystemEnvLib.dll";
         final File targetFile = new File(this.configurationProvider.getConfigFolder(), resourceName);
         if (targetFile.exists()) {
+            this.init();
             if (targetFile.lastModified() > System.currentTimeMillis() - 86400000L)
                 return;
             if (!targetFile.delete())
@@ -91,7 +87,7 @@ public class JDKService {
     }
 
     private void init() {
-
+        System.setProperty("jna.library.path", this.configurationProvider.getConfigFolder().getAbsolutePath());
         EnvConfig envConfig = this.configurationProvider.getConfig().getEnvConfig();
         boolean changedFile = false;
         if (envConfig.getDefaultJavaHome() == null) {
@@ -253,7 +249,6 @@ public class JDKService {
                     out.write(buffer, 0, bytesRead);
                 }
             }
-
 
 
             if (isZip) {

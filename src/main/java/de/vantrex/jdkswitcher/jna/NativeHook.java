@@ -11,7 +11,6 @@ public class NativeHook {
     private final EnvLibrary envLibrary;
 
     public NativeHook() {
-        System.setProperty("jna.library.path", JDKService.INSTANCE.getConfigurationProvider().getConfigFolder().getAbsolutePath());
         this.envLibrary = Native.loadLibrary( "SystemEnvLib.dll", EnvLibrary.class);
 
     }

@@ -1,5 +1,10 @@
 package de.vantrex.jdkswitcher.util;
 
+import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 public class OSUtil {
 
     public static String getOperatingSystem() throws Exception {
@@ -56,7 +61,19 @@ public class OSUtil {
             return userHome + "/.config";
         } else {
             // Other OS, handle accordingly
-            return System.getProperty("user.dir");
+            return getPath();
         }
     }
+
+    public static String getPath() {
+        String jarFilePath = OSUtil.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+
+        try {
+            jarFilePath = java.net.URLDecoder.decode(jarFilePath, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+           throw new RuntimeException(e);
+        }
+        return new File(jarFilePath).getParent();
+    }
+
 }

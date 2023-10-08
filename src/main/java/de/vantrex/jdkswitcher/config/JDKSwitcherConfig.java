@@ -2,11 +2,12 @@ package de.vantrex.jdkswitcher.config;
 
 import de.vantrex.jdkswitcher.jdk.Version;
 import de.vantrex.jdkswitcher.jdk.VersionImpl;
+import de.vantrex.jdkswitcher.util.OSUtil;
 
 public class JDKSwitcherConfig {
 
     private VersionImpl currentVersion = null;
-    private String installationDir = System.getProperty("user.dir");
+    private String installationDir = OSUtil.getPath();
     private boolean editPathVariables = true;
     private EnvConfig envConfig = new EnvConfig();
 
