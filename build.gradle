@@ -1,0 +1,48 @@
+plugins {
+    id 'java-library'
+    id "com.github.johnrengelman.shadow" version "7.1.2"
+    id "application"
+
+}
+
+group = 'de.vantrex.jdkswitcher'
+version = '1.0-SNAPSHOT'
+
+apply(plugin: "com.github.johnrengelman.shadow")
+
+
+repositories {
+    mavenCentral()
+}
+ext {
+    javaMainClass = "de.vantrex.jdkswitcher.Main"
+}
+
+application {
+    mainClassName = "de.vantrex.jdkswitcher.Main"
+}
+
+
+shadowJar {
+    manifest {
+        // Setzen Sie die Berechtigungsstufe auf "requireAdministrator"
+        attributes 'Manifest-Version': '1.0',
+                'Main-Class': mainClassName,
+                'Permissions': 'requireAdministrator'
+    }
+}
+
+
+dependencies {
+    implementation group: 'commons-io', name: 'commons-io', version: '2.14.0'
+    implementation group: 'org.apache.commons', name: 'commons-compress', version: '1.24.0'
+    implementation group: 'com.google.code.gson', name: 'gson', version: '2.10.1'
+    implementation group: 'org.json', name: 'json', version: '20230227'
+    implementation group: 'net.java.dev.jna', name: 'jna', version: '4.5.0'
+    testImplementation platform('org.junit:junit-bom:5.9.1')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+test {
+    useJUnitPlatform()
+}
