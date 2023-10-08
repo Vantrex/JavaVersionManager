@@ -2,15 +2,17 @@ package de.vantrex.jdkswitcher.jna;
 
 import com.sun.jna.Native;
 import com.sun.jna.WString;
+import de.vantrex.jdkswitcher.service.JDKService;
 
 public class NativeHook {
 
     public static final NativeHook INSTANCE = new NativeHook();
 
-    private EnvLibrary envLibrary;
+    private final EnvLibrary envLibrary;
 
     public NativeHook() {
-        this.envLibrary = Native.loadLibrary("SystemEnvLib.dll", EnvLibrary.class);
+        System.setProperty("jna.library.path", JDKService.INSTANCE.getConfigurationProvider().getConfigFolder().getAbsolutePath());
+        this.envLibrary = Native.loadLibrary( "SystemEnvLib.dll", EnvLibrary.class);
 
     }
 
