@@ -1,5 +1,4 @@
 
-#include "pch.h"
 #include <string>
 #include <Windows.h>
 #include <iostream>
