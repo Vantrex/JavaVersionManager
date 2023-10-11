@@ -1,4 +1,4 @@
-package de.vantrex.jdkswitcher.jdk.parser;
+package de.vantrex.jdkswitcher.jdk.provider;
 
 import de.vantrex.jdkswitcher.jdk.Version;
 

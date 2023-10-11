@@ -1,12 +1,12 @@
 package de.vantrex.jdkswitcher.option.handler.impl;
 
 import de.vantrex.jdkswitcher.option.handler.OptionHandler;
-import de.vantrex.jdkswitcher.service.JDKService;
+import de.vantrex.jdkswitcher.service.JdkService;
 
 public class DefaultOptionHandler implements OptionHandler {
     @Override
     public boolean handleOption(String[] args) {
-        JDKService jdkService = JDKService.INSTANCE;
+        JdkService jdkService = JdkService.INSTANCE;
         if (!jdkService.getCurrentVersion().isPresent()) {
             System.out.println("There is no java version currently installed!");
         }

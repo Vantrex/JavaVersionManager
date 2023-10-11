@@ -6,9 +6,13 @@ import de.vantrex.jdkswitcher.config.JDKSwitcherConfig;
 import de.vantrex.jdkswitcher.config.provider.ConfigurationProvider;
 import de.vantrex.jdkswitcher.http.GistFetcher;
 import de.vantrex.jdkswitcher.jdk.Version;
-import de.vantrex.jdkswitcher.jdk.parser.AdoptOpenJDK;
-import de.vantrex.jdkswitcher.jdk.parser.AmazonCorrettoOpenJDK;
-import de.vantrex.jdkswitcher.jna.NativeHook;
+import de.vantrex.jdkswitcher.jdk.provider.AdoptOpenJDK;
+import de.vantrex.jdkswitcher.jdk.provider.AmazonCorrettoOpenJDK;
+import de.vantrex.jdkswitcher.platform.IPlatform;
+import de.vantrex.jdkswitcher.platform.impl.LinuxPlatform;
+import de.vantrex.jdkswitcher.platform.impl.MacPlatform;
+import de.vantrex.jdkswitcher.platform.impl.WindowsPlatform;
+import de.vantrex.jdkswitcher.util.OSUtil;
 import de.vantrex.jdkswitcher.util.Tuple;
 import de.vantrex.jdkswitcher.util.VersionComparator;
 import org.apache.commons.io.FileUtils;
@@ -18,21 +22,16 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URL;
 import java.nio.file.Files;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.nio.file.attribute.PosixFilePermission;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class JDKService {
+public class JdkService {
 
-    public static final JDKService INSTANCE = new JDKService();
+    public static final JdkService INSTANCE = new JdkService();
 
     private final Set<Version> versions = new HashSet<>();
     private final VersionComparator versionComparator = new VersionComparator();
@@ -40,8 +39,9 @@ public class JDKService {
     private JSONObject gist;
     private final ConfigurationProvider configurationProvider = new ConfigurationProvider();
     private final DirectoryService directoryService;
+    private final IPlatform usedPlatform;
 
-    public JDKService() {
+    public JdkService() {
         configurationProvider.load();
         try {
             new GistFetcher().fetchGist().ifPresent(jsonObject -> {
@@ -55,59 +55,32 @@ public class JDKService {
         }
         this.configurationProvider.save();
         this.directoryService = new DirectoryService(this);
-        this.copyNativeDll();
+        try {
+            String operatingSystem = OSUtil.getOperatingSystem();
+            switch (operatingSystem.toLowerCase()) {
+                case "windows":
+                    this.usedPlatform = new WindowsPlatform(this.configurationProvider, directoryService);
+                    break;
+                case "macos":
+                    this.usedPlatform = new MacPlatform();
+                    break;
+                case "linux":
+                    this.usedPlatform = new LinuxPlatform(configurationProvider, directoryService);
+                    break;
+                default:
+                    this.usedPlatform = null;
+                    System.out.println("Could not find platform! exiting..");
+                    System.exit(0);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         this.init();
     }
 
-    private void copyNativeDll() {
-        String jarPath = JDKService.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-
-        String resourceName = "SystemEnvLib.dll";
-        final File targetFile = new File(this.configurationProvider.getConfigFolder(), resourceName);
-        if (targetFile.exists()) {
-            this.init();
-            if (targetFile.lastModified() > System.currentTimeMillis() - 86400000L)
-                return;
-            if (!targetFile.delete())
-                return;
-        }
-        System.out.println("copying");
-        try (InputStream inputStream = JDKService.class.getResourceAsStream("/" + resourceName);
-             OutputStream outputStream = Files.newOutputStream(targetFile.toPath())) {
-
-            byte[] buffer = new byte[1024];
-            int bytesRead;
-            //noinspection DataFlowIssue
-            while ((bytesRead = inputStream.read(buffer)) != -1) {
-                outputStream.write(buffer, 0, bytesRead);
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     private void init() {
-        System.setProperty("jna.library.path", this.configurationProvider.getConfigFolder().getAbsolutePath());
-        EnvConfig envConfig = this.configurationProvider.getConfig().getEnvConfig();
-        boolean changedFile = false;
-        if (envConfig.getDefaultJavaHome() == null) {
-            envConfig.setDefaultJavaHome(NativeHook.INSTANCE.getEnvVariable("JAVA_HOME"));
-            changedFile = true;
-        }
-        if (envConfig.getPathToJavaBin() == null) {
-            for (String path : NativeHook.INSTANCE.getEnvVariable("PATH").split(";")) {
-                if ((path.toLowerCase().contains("java") || path.toLowerCase().contains("jdk"))
-                        && path.endsWith("bin")) {
-                    System.out.println("Possible jdk path detected, saving path to file!");
-                    envConfig.setPathToJavaBin(path);
-                    changedFile = true;
-                    break;
-                }
-            }
-        }
-        if (changedFile) {
-            this.configurationProvider.save();
-        }
+        this.usedPlatform.initPlatform();
+        this.usedPlatform.findDefaultJdk();
     }
 
     public Optional<Version> getCurrentVersion() {
@@ -128,68 +101,20 @@ public class JDKService {
     }
 
     public void switchToDefault() {
-        final EnvConfig envConfig = this.configurationProvider.getConfig().getEnvConfig();
-        String pathVariable = findNativeJavaPath();
-        String[] pathArray = NativeHook.INSTANCE.getEnvVariable("PATH").split(";");
-        if (pathVariable == null) {
-            pathArray = Arrays.copyOf(pathArray, pathArray.length + 1);
-            pathArray[pathArray.length - 1] = envConfig.getPathToJavaBin();
-        } else {
-            for (int i = 0; i < pathArray.length; i++) {
-                if (pathArray[i].equals(pathVariable)) {
-                    pathArray[i] = envConfig.getPathToJavaBin();
-                }
-            }
-        }
-        NativeHook.INSTANCE.setEnvVariable("JAVA_HOME", envConfig.getDefaultJavaHome());
-        if (this.configurationProvider.getConfig().isEditPathVariables()) {
-            NativeHook.INSTANCE.setEnvVariable("PATH", String.join(";", pathArray));
-        }
-        NativeHook.INSTANCE.restartExplorer();
+        usedPlatform.switchToDefault();
     }
 
     public void downloadJdk(Version version) {
-        JDKSwitcherConfig config = this.configurationProvider.getConfig();
         String path = directoryService.getInstallationDir() + File.separator + version.toDirString();
         this.downloadAndExtract(version.downloadUrl(), path);
     }
 
-    public void switchToJdk(Version version) {
-        JDKSwitcherConfig config = this.configurationProvider.getConfig();
-        String path = this.directoryService.getInstallationDir() + File.separator + version.toDirString();
-        String binPath = path + File.separator + "bin";
-        if (binPath.contains(";"))
-            throw new UnsupportedOperationException("Path cannot contain \";\"!");
-        config.setCurrentVersion(version);
-        NativeHook.INSTANCE.setEnvVariable("JAVA_HOME", path);
-        if (this.configurationProvider.getConfig().isEditPathVariables())
-            NativeHook.INSTANCE.setEnvVariable("PATH", String.join(";", switchJavaPath(binPath)));
-        configurationProvider.save();
-        NativeHook.INSTANCE.restartExplorer();
+    public void installVersion(Version version) {
+        this.usedPlatform.installVersion(version);
     }
 
-    private String[] switchJavaPath(String newPath) {
-        String[] pathArray = NativeHook.INSTANCE.getEnvVariable("PATH").split(";");
-        String pathVariable = findNativeJavaPath();
-        for (int i = 0; i < pathArray.length; i++) {
-            if (pathArray[i].equals(pathVariable)) {
-                pathArray[i] = newPath;
-            }
-        }
-        return pathArray;
-    }
 
-    private String findNativeJavaPath() {
-        for (String path : NativeHook.INSTANCE.getEnvVariable("PATH").split(";")) {
-            if ((path.toLowerCase().contains("java") || path.toLowerCase().contains("jdk"))
-                    && path.endsWith("bin")) {
-                return path;
-            }
-        }
-        return null;
-    }
-
-    public boolean isInstalled(Version version) {
+    public boolean isDownloaded(Version version) {
         for (Tuple<Version, File> localJdkInstallation : this.directoryService.getLocalJdkInstallations()) {
             if (localJdkInstallation.getLeft().compiledName().equals(version.compiledName()))
                 return true;
@@ -214,8 +139,6 @@ public class JDKService {
     }
 
     public void displayLocalJdks() {
-        Pattern pattern = Pattern.compile("\\D*(\\d+)");
-
         for (Version version : this.directoryService.getLocalJdkInstallations()
                 .stream()
                 .map(Tuple::getLeft)
@@ -261,10 +184,11 @@ public class JDKService {
                 tempFile.delete();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         final File file = new File(extractionPath);
         if (file.exists() && file.isDirectory() && Objects.requireNonNull(file.list()).length == 1) {
+            to = Arrays.stream(file.listFiles()).findFirst().orElse(null);
             if (to != null) {
                 File tempFile = new File(UUID.randomUUID().toString());
                 try {
@@ -275,6 +199,18 @@ public class JDKService {
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
+            }
+        }
+        if (usedPlatform instanceof LinuxPlatform) {
+
+            Set<PosixFilePermission> perms = new HashSet<>();
+            perms.add(PosixFilePermission.OWNER_EXECUTE);
+            perms.add(PosixFilePermission.OTHERS_EXECUTE);
+
+            try {
+                Files.setPosixFilePermissions(new File(extractionPath, "bin" + File.separator + "java").toPath(), perms);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
         }
     }

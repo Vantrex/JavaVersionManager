@@ -2,13 +2,13 @@ package de.vantrex.jdkswitcher.option.handler.impl;
 
 import de.vantrex.jdkswitcher.jdk.Version;
 import de.vantrex.jdkswitcher.option.handler.OptionHandler;
-import de.vantrex.jdkswitcher.service.JDKService;
+import de.vantrex.jdkswitcher.service.JdkService;
 
 import java.util.Optional;
 
 public class InstallOptionHandler implements OptionHandler {
 
-    private final JDKService jdkService = JDKService.INSTANCE;
+    private final JdkService jdkService = JdkService.INSTANCE;
 
     @Override
     public boolean handleOption(String[] args) {
@@ -20,14 +20,14 @@ public class InstallOptionHandler implements OptionHandler {
         }
         final Version version = versionOptional.get();
         if (jdkService.getCurrentVersion().filter(version1 -> version.toString().equals(version1.toString())).isPresent()) {
-            System.out.println(version.toString() + " is already installed!");
+            System.out.println(version + " is already installed!");
             return true;
         }
         System.out.println("Installing " + version.toDirString() +  "..");
-        if (!jdkService.isInstalled(version)) {
+        if (!jdkService.isDownloaded(version)) {
             jdkService.downloadJdk(version);
         }
-        jdkService.switchToJdk(version);
+        jdkService.installVersion(version);
         System.out.println("Installed " + version + "!");
         return false;
     }
@@ -39,6 +39,6 @@ public class InstallOptionHandler implements OptionHandler {
 
     @Override
     public String[] getOptionString() {
-        return new String[]{"jdk"};
+        return new String[]{"jdk-version"};
     }
 }

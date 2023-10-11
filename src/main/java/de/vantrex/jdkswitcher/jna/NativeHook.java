@@ -2,7 +2,6 @@ package de.vantrex.jdkswitcher.jna;
 
 import com.sun.jna.Native;
 import com.sun.jna.WString;
-import de.vantrex.jdkswitcher.service.JDKService;
 
 public class NativeHook {
 

@@ -2,8 +2,6 @@ package de.vantrex.jdkswitcher.util;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 public class OSUtil {
 
@@ -30,7 +28,7 @@ public class OSUtil {
         String arch = System.getProperty("os.arch").toLowerCase();
         if (arch.contains("64") || arch.contains("amd64") || arch.contains("x86_64")) {
             // Format arm64 into x64 for Windows
-            if (System.getProperty("os.name").toLowerCase().contains("win") && arch.contains("amd64")) {
+            if (arch.contains("amd64")) {
                 return "x64";
             }
             return arch;

@@ -19,6 +19,8 @@ public interface Version {
 
     default boolean canUseOnOperatingSystem() {
         try {
+          //  System.out.println(OSUtil.getOperatingSystem() + " " + OSUtil.getArchitecture());
+        //    System.out.println(this.operatingSystem() + " " + this.systemArchitecture());
             return this.operatingSystem().equalsIgnoreCase(OSUtil.getOperatingSystem())
                     && this.systemArchitecture().equals(OSUtil.getArchitecture());
         } catch (Exception e) {
