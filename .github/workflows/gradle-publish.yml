@@ -40,7 +40,7 @@ jobs:
     - name: Execute build with Gradle wrapper
       shell: bash
       run: |
-        ./gradlew build
+        ./gradlew shadowJar
 
     # The USERNAME and TOKEN need to correspond to the credentials environment variables used in
     # the publishing section of your build.gradle
