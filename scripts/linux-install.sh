@@ -5,7 +5,8 @@ if [ ! -e "$HOME/jvm" ]; then
 fi
 cd ".."
 echo 'Building jar..'
-./gradlew shadowJar -q &> /dev/ null
+#./gradlew shadowJar -q &> /dev/ null
+./gradlew shadowJar
 echo 'Built jar!'
 echo 'Moving jar into home dir'
 mv "build/libs/JDKSwitcher-1.0-SNAPSHOT-all.jar" "$HOME/jvm/jvm.jar"
