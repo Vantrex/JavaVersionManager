@@ -20,6 +20,7 @@ java -jar $HOME/jvm/jvm.jar $@
 if [ "$#" -ge 1 ]; then
       source ~/.profile
 fi' > 'jvm'
+chmod 777 jvm
 echo 'Modifying .bashrc..'
 # shellcheck disable=SC2016
 echo '
