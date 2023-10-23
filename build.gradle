@@ -16,7 +16,7 @@ repositories {
     mavenCentral()
     maven {
         name = "GitHubPackages"
-        url = uri("https://maven.pkg.github.com/my-username/my-library")
+        url = uri("https://maven.pkg.github.com/Vantrex/JDKSwitcher")
         credentials {
             username = System.getenv("USERNAME")
             password = System.getenv("TOKEN")
