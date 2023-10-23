@@ -73,8 +73,10 @@ public class LinuxPlatform implements IPlatform {
             }
         }
         writeToProfileFile(lines);
-        CommandRunner.handleBashCommand("bash", new String[]{"-c", "export", javaHomeEnv});
-        CommandRunner.handleBashCommand("bash", new String[]{"-c", "export", "PATH=" + "\"$JAVA_HOME" + File.separator + "bin:$PATH\""});
+//        CommandRunner.handleBashCommand("bash", new String[]{"-c", "export", javaHomeEnv});
+ //       CommandRunner.handleBashCommand("bash", new String[]{"-c", "export", "PATH=" + "\"$JAVA_HOME" + File.separator + "bin:$PATH\""});
+        System.out.println("source ~/.profile");
+
         System.out.println("new java version: ");
         for (String bash : CommandRunner.handleBashCommand("bash", new String[]{"-c", "java", "-version"})) {
             System.out.println(bash);
@@ -123,8 +125,8 @@ public class LinuxPlatform implements IPlatform {
             }
 
 
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (IOException ignored) {
+
         }
         if (changedFile) {
             this.configurationProvider.save();
@@ -132,10 +134,12 @@ public class LinuxPlatform implements IPlatform {
     }
 
     private File findJavaDir(String searchPath) throws IOException {
+        System.out.println("readlink " + searchPath);
         List<String> output = CommandRunner.handleBashCommand("readlink", new String[]{searchPath});
         System.out.println("searched for " + searchPath);
         if (output.isEmpty()) {
-            throw new RuntimeException("No java installation found!");
+            return new File(searchPath);
+            //throw new RuntimeException("No java installation found!");
         }
         if (!isJavaFolder(output.get(0))) {
             return findJavaDir(output.get(0));

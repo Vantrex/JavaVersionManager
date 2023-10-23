@@ -2,7 +2,6 @@ package de.vantrex.jdkswitcher.service;
 
 
 import de.vantrex.jdkswitcher.config.EnvConfig;
-import de.vantrex.jdkswitcher.config.JDKSwitcherConfig;
 import de.vantrex.jdkswitcher.config.provider.ConfigurationProvider;
 import de.vantrex.jdkswitcher.http.GistFetcher;
 import de.vantrex.jdkswitcher.jdk.Version;
@@ -26,7 +25,6 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.*;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class JdkService {
@@ -150,7 +148,6 @@ public class JdkService {
     }
 
     public void displayRemoteJdks() {
-        Pattern pattern = Pattern.compile("\\D*(\\d+)");
         for (Version version : versions.stream()
                 .sorted(versionComparator).collect(Collectors.toList())) {
             if (version.canUseOnOperatingSystem())
@@ -160,7 +157,7 @@ public class JdkService {
 
     public void downloadAndExtract(String fileUrl, String extractionPath) {
         final boolean isZip = fileUrl.endsWith(".zip");
-        File to = null;
+        File to;
         final String tempFileName = isZip ? "temp.zip" : "temp.tar.gz";
         try {
             URL url = new URL(fileUrl);
@@ -188,7 +185,7 @@ public class JdkService {
         }
         final File file = new File(extractionPath);
         if (file.exists() && file.isDirectory() && Objects.requireNonNull(file.list()).length == 1) {
-            to = Arrays.stream(file.listFiles()).findFirst().orElse(null);
+            to = Arrays.stream(Objects.requireNonNull(file.listFiles())).findFirst().orElse(null);
             if (to != null) {
                 File tempFile = new File(UUID.randomUUID().toString());
                 try {
