@@ -1,6 +1,4 @@
 #!/bin/bash
-
-
 cd "scripts" || exit
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
     bash linux-install.sh
