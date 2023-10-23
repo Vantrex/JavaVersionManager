@@ -1,14 +1,9 @@
 package de.vantrex.jdkswitcher.option.registry;
 
 import de.vantrex.jdkswitcher.option.RegisteredOption;
-import de.vantrex.jdkswitcher.option.handler.impl.CurrentOptionHandler;
-import de.vantrex.jdkswitcher.option.handler.impl.DefaultOptionHandler;
-import de.vantrex.jdkswitcher.option.handler.impl.InstallOptionHandler;
-import de.vantrex.jdkswitcher.option.handler.impl.ListOptionHandler;
-import de.vantrex.jdkswitcher.option.handler.impl.RemoveOptionHandler;
+import de.vantrex.jdkswitcher.option.handler.impl.*;
 
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 
 public class OptionRegistry {

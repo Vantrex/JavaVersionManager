@@ -5,9 +5,7 @@ import de.vantrex.jdkswitcher.util.Tuple;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -21,15 +19,18 @@ import java.util.zip.ZipInputStream;
 
 public class DirectoryService {
 
-    private final JDKService jdkService;
+    private final JdkService jdkService;
     private File installationDir;
 
-    public DirectoryService(JDKService jdkService) {
+    public DirectoryService(JdkService jdkService) {
         this.jdkService = jdkService;
         this.installationDir = new File(this.jdkService.getConfigurationProvider().getConfig().getInstallationDir(),
                 "jdks");
-        if (!installationDir.exists())
-            installationDir.mkdirs();
+        if (!installationDir.exists()) {
+            if (!installationDir.mkdirs()) {
+                throw new RuntimeException("File could not be created!");
+            }
+        }
     }
 
     public Set<Tuple<Version, File>> getLocalJdkInstallations() {
@@ -87,40 +88,46 @@ public class DirectoryService {
                 zipEntry = zipInputStream.getNextEntry();
             }
 
-            System.out.println("ZIP-Datei erfolgreich entpackt.");
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return to;
     }
 
-    public File extractTarGzFile(String tarGzFilePath, String extractionPath) {
+    public File extractTarGzFile(String tarGzFilePath, String extractionPath) throws IOException {
         File to = null;
-        try (TarArchiveInputStream tarInput = new TarArchiveInputStream(new GZIPInputStream(new FileInputStream(tarGzFilePath)))) {
-            TarArchiveEntry entry;
-            while ((entry = tarInput.getNextTarEntry()) != null) {
-                String filePath = extractionPath + File.separator + entry.getName();
 
-                // Erstelle die Verzeichnisstruktur, falls notwendig
+        try (TarArchiveInputStream tarInput = new TarArchiveInputStream(new GZIPInputStream(Files
+                .newInputStream(Paths.get(tarGzFilePath))))) {
+            TarArchiveEntry entry;
+            byte[] buffer = new byte[1024];
+
+            while ((entry = tarInput.getNextTarEntry()) != null) {
+                String fileName = entry.getName();
+                File destinationFile = new File(extractionPath, fileName);
+
                 if (entry.isDirectory()) {
-                    if (to == null) {
-                        to = new File(filePath);
+                    if (to == null)
+                        to = destinationFile;
+                    if (!destinationFile.mkdirs()) {
+                        System.out.println("File could not be created, continuing anyways..");
                     }
-                    new File(filePath).mkdirs();
                 } else {
-                    byte[] content = new byte[(int) entry.getSize()];
-                    tarInput.read(content);
-                    try (FileOutputStream fos = new FileOutputStream(filePath)) {
-                        fos.write(content);
+                    // Read the contents of the file into a byte array
+                    FileOutputStream fos = new FileOutputStream(destinationFile);
+                    int len;
+                    while ((len = tarInput.read(buffer)) > 0) {
+                        fos.write(buffer, 0, len);
                     }
+                    fos.close();
                 }
             }
-
-            System.out.println("TAR.GZ-Datei erfolgreich entpackt.");
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-        return to;
+        File file = new File(extractionPath);
+        System.out.println("file: " + file);
+        return file;
     }
 
     private File newFile(File destinationDir, ZipEntry zipEntry) throws IOException {

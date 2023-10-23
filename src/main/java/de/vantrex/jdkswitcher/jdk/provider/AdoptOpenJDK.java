@@ -1,4 +1,4 @@
-package de.vantrex.jdkswitcher.jdk.parser;
+package de.vantrex.jdkswitcher.jdk.provider;
 
 import de.vantrex.jdkswitcher.jdk.Version;
 import de.vantrex.jdkswitcher.jdk.VersionImpl;
@@ -13,11 +13,9 @@ import java.util.regex.Pattern;
 public class AdoptOpenJDK implements ProviderParser {
 
     private final JSONObject object;
-
     private final Set<Version> versions = new HashSet<>();
-
     private final List<String> possibleOperationSystems = Arrays.asList("windows", "linux", "macOS");
-    private final List<String> possibleArchitectures = Arrays.asList("x64", "x86", "aarch64", "arm");
+    private final List<String> possibleArchitectures = Arrays.asList("amd64", "x64", "x86", "aarch64", "arm");
     private final Pattern pattern = Pattern.compile("openjdk-\\d+");
 
     public AdoptOpenJDK(JSONObject object) {

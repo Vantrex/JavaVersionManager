@@ -1,11 +1,11 @@
 package de.vantrex.jdkswitcher.option.handler.impl;
 
 import de.vantrex.jdkswitcher.option.handler.OptionHandler;
-import de.vantrex.jdkswitcher.service.JDKService;
+import de.vantrex.jdkswitcher.service.JdkService;
 
 public class ListOptionHandler implements OptionHandler {
 
-    private final JDKService jdkService = JDKService.INSTANCE;
+    private final JdkService jdkService = JdkService.INSTANCE;
 
     @Override
     public boolean handleOption(String[] args) {
