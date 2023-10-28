@@ -1,10 +1,12 @@
 #!/bin/bash
 
+DIRECTORY="$HOME/.jvm"
+
 function download_and_set_java_home() {
     # shellcheck disable=SC2155
     local arch=$(uname -m)
     local download_url=""
-    local target_directory="temp_jdk"  # Specify the target directory here
+    local target_directory="$DIRECTORY/temp_jdk"  # Specify the target directory here
     case "$arch" in
         "x86_64")
             download_url="https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u382-b05/OpenJDK8U-jdk_x64_linux_hotspot_8u382b05.tar.gz"
@@ -27,7 +29,7 @@ function download_and_set_java_home() {
 
     # Unpack the downloaded tar.gz file
     tar -xzvf OpenJDK*.tar.gz -C "$target_directory"
-
+    #local java_home="$target_directory/$(tar -tzf OpenJDK*.tar.gz | head -1 | cut -f1 -d'/')"
     # Set JAVA_HOME environment variable to the unpacked directory
     # shellcheck disable=SC2155
     export JAVA_HOME="$target_directory/$(tar -tzf OpenJDK*.tar.gz | head -1 | cut -f1 -d'/')"
@@ -42,7 +44,7 @@ function download_and_set_java_home() {
 }
 
 echo 'Installing JVM for Linux..'
-DIRECTORY="$HOME/.jvm"
+
 echo 'Creating directory..'
 if [ ! -e "$DIRECTORY" ]; then
     mkdir "$DIRECTORY"
