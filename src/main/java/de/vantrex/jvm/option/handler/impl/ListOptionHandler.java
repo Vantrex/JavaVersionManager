@@ -9,6 +9,7 @@ public class ListOptionHandler implements OptionHandler {
 
     @Override
     public boolean handleOption(String[] args) {
+        System.out.println("list option handler");
         if (args.length == 0 || !args[0].equalsIgnoreCase("remote")) {
             jdkService.displayLocalJdks();
             return true;
