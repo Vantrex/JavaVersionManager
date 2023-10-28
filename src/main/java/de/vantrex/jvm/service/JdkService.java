@@ -136,7 +136,7 @@ public class JdkService {
 
     private void loadRemoteVersions() {
         this.parseProvider(new AdoptOpenJDK(this.gist.getJSONObject("adopt")));
-        this.parseProvider(new AmazonCorrettoOpenJDK(this.gist.getJSONObject("amazon")));
+        this.parseProvider(new AmazonCorrettoOpenJDK(this.gist.getJSONObject("amazon-corretto")));
     }
 
     private void parseProvider(ProviderParser parser) {
