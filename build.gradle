@@ -6,7 +6,7 @@ plugins {
 
 }
 
-group = 'de.vantrex.jdkswitcher'
+group = 'de.vantrex.javaversionmanager'
 version = '1.0-SNAPSHOT'
 
 apply(plugin: "com.github.johnrengelman.shadow")
@@ -16,7 +16,7 @@ repositories {
     mavenCentral()
     maven {
         name = "GitHubPackages"
-        url = uri("https://maven.pkg.github.com/Vantrex/JDKSwitcher")
+        url = uri("https://maven.pkg.github.com/Vantrex/JavaVersionManager")
         credentials {
             username = System.getenv("USERNAME")
             password = System.getenv("TOKEN")
@@ -24,11 +24,11 @@ repositories {
     }
 }
 ext {
-    javaMainClass = "de.vantrex.jdkswitcher.Main"
+    javaMainClass = "de.vantrex.jvm.Main"
 }
 
 application {
-    mainClassName = "de.vantrex.jdkswitcher.Main"
+    mainClassName = "de.vantrex.jvm.Main"
 }
 
 
@@ -44,8 +44,8 @@ shadowJar {
 publishing {
     repositories {
         maven {
-            name = "GitHubPackages"
-            url = "https://maven.pkg.github.com/octocat/hello-world"
+            name = "JavaVersionManager"
+            url = "https://maven.pkg.github.com/Vantrex/JavaVersionManager"
             credentials {
                 username = System.getenv("GITHUB_ACTOR")
                 password = System.getenv("GITHUB_TOKEN")

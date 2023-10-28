@@ -13,7 +13,7 @@ echo 'Building jar..'
 ./gradlew shadowJar
 echo 'Built jar!'
 echo 'Moving jar into home dir'
-mv "build/libs/JDKSwitcher-1.0-SNAPSHOT-all.jar" "$DIRECTORY/bin/jvm.jar"
+mv "build/libs/JavaVersionManager-1.0-SNAPSHOT-all.jar" "$DIRECTORY/bin/jvm.jar"
 echo 'Cleanup..'
 rm -r build
 echo 'Creating start file'
@@ -35,4 +35,14 @@ PATH="$JVM_DIR/bin:$PATH"' >> "$HOME/.profile"
 fi
 source "$HOME/.profile"
 echo 'Modified .profile!'
+
+if ! grep -q '# JVM Alias' "$HOME/.bashrc"; then
+  echo 'Adding ". jvm" alias..'
+  echo '
+# JVM Alias
+alias jvm=". jvm"' >> "$HOME/.bashrc"
+echo "Added alias!"
+fi
+
+
 echo 'Installed JVM for Linux! Use "jvm" to run.'
