@@ -23,7 +23,7 @@ echo '#!/bin/sh
 java -jar '"$DIRECTORY"'/bin/jvm.jar $@
 if [ "$#" -ge 1 ]; then
       source ~/.profile
-fi' > 'jvm'
+fi' > 'bin/jvm'
 chmod 777 jvm
 echo 'Modifying .profile..'
 # shellcheck disable=SC2016
