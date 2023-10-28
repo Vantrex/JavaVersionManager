@@ -29,6 +29,7 @@ function download_and_set_java_home() {
     tar -xzvf OpenJDK*.tar.gz -C "$target_directory"
 
     # Set JAVA_HOME environment variable to the unpacked directory
+    # shellcheck disable=SC2155
     export JAVA_HOME="$target_directory/$(tar -tzf OpenJDK*.tar.gz | head -1 | cut -f1 -d'/')"
     # Add JAVA_HOME to PATH
     export PATH="$JAVA_HOME/bin:$PATH"
