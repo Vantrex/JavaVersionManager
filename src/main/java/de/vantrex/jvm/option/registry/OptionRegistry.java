@@ -25,4 +25,5 @@ public class OptionRegistry {
     public Set<RegisteredOption> getOptions() {
         return options;
     }
+
 }

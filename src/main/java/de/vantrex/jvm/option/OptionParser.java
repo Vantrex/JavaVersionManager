@@ -30,7 +30,7 @@ public class OptionParser {
         final String[] optionArguments = new String[args.length - 1];
         System.arraycopy(args, 1, optionArguments, 0, optionArguments.length);
         optionHandler.ifPresent(optionHandler1 -> {
-            if (!optionHandler1.handleOption(args)) {
+            if (!optionHandler1.handleOption(optionArguments)) {
                 System.out.println("This command is not implemented yet!");
             }
         });

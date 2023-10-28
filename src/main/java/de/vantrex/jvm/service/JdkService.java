@@ -137,14 +137,19 @@ public class JdkService {
     }
 
     public void displayLocalJdks() {
+        boolean displayed = false;
         for (Version version : this.directoryService.getLocalJdkInstallations()
                 .stream()
                 .map(Tuple::getLeft)
                 .sorted(versionComparator).collect(Collectors.toList())) {
-            if (version.canUseOnOperatingSystem())
+            if (version.canUseOnOperatingSystem()) {
                 System.out.println(version);
+                displayed = true;
+            }
         }
-
+        if (!displayed) {
+            System.out.println("There are no local jdk installations!");
+        }
     }
 
     public void displayRemoteJdks() {
