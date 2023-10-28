@@ -31,6 +31,7 @@ if ! grep -q '# JVM installation' "$HOME/.profile"; then
     echo '
 # JVM installation
 JVM_DIR="$HOME/.jvm"
+export JVM_DIR
 PATH="$JVM_DIR/bin:$PATH"
 export PATH' >> "$HOME/.profile"
 fi
