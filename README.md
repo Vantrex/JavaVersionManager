@@ -1,7 +1,7 @@
 # JavaVersionManager
 
 ---
-***JavaVersionManager*** is a simple tool to manage multiple JDK versions your system. It allows you to easily switch between versions of Java.
+***JavaVersionManager*** is a simple tool to manage multiple JDK versions on your system. It allows you to easily switch between versions of Java.
 
 ## IMPORTANT:
 ****This project is still in development, *macOS* is not supported yet and *Windows* does not have a working installer yet.****
