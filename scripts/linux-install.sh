@@ -31,7 +31,8 @@ if ! grep -q '# JVM installation' "$HOME/.profile"; then
     echo '
 # JVM installation
 JVM_DIR="$HOME/.jvm"
-PATH="$JVM_DIR/bin:$PATH"' >> "$HOME/.profile"
+PATH="$JVM_DIR/bin:$PATH"
+export PATH' >> "$HOME/.profile"
 fi
 source "$HOME/.profile"
 echo 'Modified .profile!'

@@ -38,8 +38,8 @@ public class LinuxPlatform implements IPlatform {
     @Override
     public void installVersion(Version version) {
         try {
-            final List<ProfileLine> lines = this.getCurrentDotProfileContent();
-            final List<ProfileLine> toEdit = this.findLinesToEditInDotProfileFile(lines);
+            final List<ProfileLine> lines = this.getCurrentDotBashrcContent();
+            final List<ProfileLine> toEdit = this.findLinesToEditInDotBashrcFile(lines);
             System.out.println(lines.stream().map(ProfileLine::getContent).collect(Collectors.toList()));
             System.out.println("^lines");
             System.out.println(toEdit);
@@ -55,8 +55,8 @@ public class LinuxPlatform implements IPlatform {
     public void switchToDefault() {
         final JVMConfig config = this.configurationProvider.getConfig();
         try {
-            final List<ProfileLine> lines = this.getCurrentDotProfileContent();
-            final List<ProfileLine> toEdit = this.findLinesToEditInDotProfileFile(lines);
+            final List<ProfileLine> lines = this.getCurrentDotBashrcContent();
+            final List<ProfileLine> toEdit = this.findLinesToEditInDotBashrcFile(lines);
             final String javaHomeEnv = "JAVA_HOME=" + config.getEnvConfig().getDefaultJavaHome();
             replaceDotProfileAndSubmit(lines, toEdit, javaHomeEnv);
         } catch (IOException e) {
@@ -72,16 +72,14 @@ public class LinuxPlatform implements IPlatform {
                 line.setContent(javaHomeEnv);
             }
         }
-        writeToProfileFile(lines);
+        writeToBashrc(lines);
 //        CommandRunner.handleBashCommand("bash", new String[]{"-c", "export", javaHomeEnv});
  //       CommandRunner.handleBashCommand("bash", new String[]{"-c", "export", "PATH=" + "\"$JAVA_HOME" + File.separator + "bin:$PATH\""});
-        System.out.println("source ~/.profile");
-
-        System.out.println("new java version: ");
         for (String bash : CommandRunner.handleBashCommand("bash", new String[]{"-c", "java", "-version"})) {
             System.out.println(bash);
         }
     }
+
 
     @Override
     public void findDefaultJdk() {
@@ -94,9 +92,6 @@ public class LinuxPlatform implements IPlatform {
                 throw new RuntimeException("No java installation found!");
             }
             final File javaDir = findJavaDir(output.get(0));
-            System.out.println("found javaDir: " + javaDir.getParentFile().getAbsolutePath());
-            System.out.println("bin: " + javaDir.getAbsolutePath());
-            System.out.println("^JAVA_HOME" + hasJavaHome());
             if (!hasJavaHome()) {
                 System.out.println("found no default java home!");
                 exportDefaultJavaHome(javaDir.getParentFile().getAbsolutePath());
@@ -134,9 +129,7 @@ public class LinuxPlatform implements IPlatform {
     }
 
     private File findJavaDir(String searchPath) throws IOException {
-        System.out.println("readlink " + searchPath);
         List<String> output = CommandRunner.handleBashCommand("readlink", new String[]{searchPath});
-        System.out.println("searched for " + searchPath);
         if (output.isEmpty()) {
             return new File(searchPath);
             //throw new RuntimeException("No java installation found!");
@@ -166,7 +159,7 @@ public class LinuxPlatform implements IPlatform {
                 this.configurationProvider.getConfig().getEnvConfig().getDefaultJavaHome() != null) {
             return;
         }
-        final List<ProfileLine> profileLines = this.getCurrentDotProfileContent();
+        final List<ProfileLine> profileLines = this.getCurrentDotBashrcContent();
         int currentIndex = profileLines.stream().map(ProfileLine::getIndex).max(Integer::compare).orElse(0);
         if (currentIndex != 0 && !profileLines.get(profileLines.size() - 1).getContent().isEmpty()) {
             profileLines.add(new ProfileLine(++currentIndex, "\n"));
@@ -177,15 +170,15 @@ public class LinuxPlatform implements IPlatform {
         profileLines.add(new ProfileLine(++currentIndex, "export JAVA_HOME"));
         profileLines.add(new ProfileLine(++currentIndex, "PATH=\"$JAVA_HOME" + File.separator + "bin:$PATH\""));
         profileLines.add(new ProfileLine(++currentIndex, "export PATH"));
-        this.writeToProfileFile(profileLines);
+        this.writeToBashrc(profileLines);
         CommandRunner.handleBashCommand("bash", new String[]{"-c", "export", "JAVA_HOME=" + javaHome});
         this.pathEnv = javaHome + File.separator + "bin";
         this.javaHomeEnv = javaHome;
         CommandRunner.handleBashCommand("bash", new String[]{"-c", "export", "PATH=" + "\"$JAVA_HOME" + File.separator + "bin:$PATH\""});
     }
 
-    private void writeToProfileFile(final List<ProfileLine> profileLines) {
-        final File profileFiles = new File(System.getProperty("user.home"), ".profile");
+    private void writeToBashrc(final List<ProfileLine> profileLines) {
+        final File profileFiles = new File(System.getProperty("user.home"), ".bashrc");
         try (final FileWriter fileWriter = new FileWriter(profileFiles)) {
             for (ProfileLine profileLine : profileLines) {
                 final StringBuilder toWrite = new StringBuilder();
@@ -201,8 +194,8 @@ public class LinuxPlatform implements IPlatform {
         }
     }
 
-    private List<ProfileLine> getCurrentDotProfileContent() throws IOException {
-        final File profileFiles = new File(System.getProperty("user.home"), ".profile");
+    private List<ProfileLine> getCurrentDotBashrcContent() throws IOException {
+        final File profileFiles = new File(System.getProperty("user.home"), ".bashrc");
         if (!profileFiles.exists()) {
             // TODO SHOULD WE CREATE ONE?
             return Lists.newArrayList();
@@ -220,7 +213,7 @@ public class LinuxPlatform implements IPlatform {
         return profileLines;
     }
 
-    private List<ProfileLine> findLinesToEditInDotProfileFile(final List<ProfileLine> profileLines) {
+    private List<ProfileLine> findLinesToEditInDotBashrcFile(final List<ProfileLine> profileLines) {
         final List<ProfileLine> toEdit = new ArrayList<>();
         final int totalLines = profileLines.size();
         lineLoop:
