@@ -41,7 +41,7 @@ function download_and_set_java_home() {
     rm OpenJDK*.tar.gz
 
     echo "OpenJDK downloaded and unpacked successfully."
-    echo "$JAVA_HOME"
+    echo "Java Home: $JAVA_HOME"
 }
 
 echo 'Installing JVM for Linux..'
@@ -83,7 +83,7 @@ echo 'Moving jar into home dir'
 mv "build/libs/JavaVersionManager-1.0-SNAPSHOT-all.jar" "$DIRECTORY/bin/jvm.jar"
 echo 'Cleanup..'
 rm -r build
-rm -rf "$JAVA_DIR"
+rm -rf "$JAVA_HOME"
 echo 'Cleaned up!'
 echo 'Creating start file'
 cd "$DIRECTORY" || exit
