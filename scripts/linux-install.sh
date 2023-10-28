@@ -7,6 +7,7 @@ function download_and_set_java_home() {
     local arch=$(uname -m)
     local download_url=""
     local target_directory="$DIRECTORY/temp_jdk"  # Specify the target directory here
+    mkdir "$target_directory"
     case "$arch" in
         "x86_64")
             download_url="https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u382-b05/OpenJDK8U-jdk_x64_linux_hotspot_8u382b05.tar.gz"
