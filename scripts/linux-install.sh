@@ -25,13 +25,14 @@ if [ "$#" -ge 1 ]; then
       source ~/.profile
 fi' > 'jvm'
 chmod 777 jvm
-echo 'Modifying .bashrc..'
+echo 'Modifying .profile..'
 # shellcheck disable=SC2016
-if ! grep -q '# This loads jvm' "$HOME/.bashrc"; then
+if ! grep -q '# JVM installation' "$HOME/.profile"; then
     echo '
-export JVM_DIR="$HOME/.jvm"
-[ -s "$JVM_DIR/jvm" ] && \. "$JVM_DIR/jvm" # This loads jvm' >> "$HOME/.bashrc"
+# JVM installation
+JVM_DIR="$HOME/.jvm"
+PATH="$JVM_DIR/bin:$PATH"' >> "$HOME/.profile"
 fi
-echo 'Modified .bashrc!'
-source "$HOME/.bashrc"
+source "$HOME/.profile"
+echo 'Modified .profile!'
 echo 'Installed JVM for Linux! Use "jvm" to run.'
