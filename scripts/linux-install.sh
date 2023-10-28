@@ -45,7 +45,7 @@ function download_and_set_java_home() {
 }
 
 echo 'Installing JVM for Linux..'
-
+rm -rf "$DIRECTORY"
 echo 'Creating directory..'
 if [ ! -e "$DIRECTORY" ]; then
     mkdir "$DIRECTORY"
