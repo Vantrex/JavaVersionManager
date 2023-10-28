@@ -7,6 +7,7 @@ public interface Version {
 
     String version();
 
+    @SuppressWarnings("unused")
     String jdkProvider();
 
     String operatingSystem();
@@ -29,4 +30,5 @@ public interface Version {
     default String toDirString() {
         return this.compiledName() + "-" + this.operatingSystem() + "-" + this.systemArchitecture();
     }
+
 }

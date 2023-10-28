@@ -4,6 +4,7 @@ import de.vantrex.jvm.jdk.Version;
 import de.vantrex.jvm.jdk.VersionImpl;
 import de.vantrex.jvm.util.OSUtil;
 
+@SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal", "CanBeFinal"})// IntelliJ is drunk, these fields are modified by Gson
 public class JVMConfig {
 
     private VersionImpl currentVersion = null;
@@ -13,10 +14,6 @@ public class JVMConfig {
 
     public void setCurrentVersion(Version currentVersion) {
         this.currentVersion = (VersionImpl) currentVersion;
-    }
-
-    public void setInstallationDir(String installationDir) {
-        this.installationDir = installationDir;
     }
 
     public String getInstallationDir() {

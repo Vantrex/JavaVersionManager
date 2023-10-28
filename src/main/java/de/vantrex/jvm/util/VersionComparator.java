@@ -11,8 +11,8 @@ public class VersionComparator implements Comparator<Version> {
 
     @Override
     public int compare(Version o1, Version o2) {
-        Matcher matcher = pattern.matcher(o1.version());
-        Matcher matcher2 = pattern.matcher(o2.version());
+        final Matcher matcher = pattern.matcher(o1.version());
+        final Matcher matcher2 = pattern.matcher(o2.version());
         int version1 = 0;
         int version2 = 0;
         if (matcher.find()) {

@@ -12,8 +12,8 @@ public class InstallOptionHandler implements OptionHandler {
 
     @Override
     public boolean handleOption(String[] args) {
-        final String toInstall = args[0];
-        final Optional<Version> versionOptional = jdkService.fromCompiledName(toInstall);
+        final String versionToInstall = args[0];
+        final Optional<Version> versionOptional = jdkService.fromCompiledName(versionToInstall);
         if (!versionOptional.isPresent()) {
             System.out.println("Version not found!");
             return true;

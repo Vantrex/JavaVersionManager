@@ -24,8 +24,11 @@ public class ConfigurationProvider {
     private JVMConfig config;
 
     public ConfigurationProvider() {
-        if (!configFolder.exists())
-            configFolder.mkdirs();
+        if (!configFolder.exists()) {
+            if (!configFolder.mkdirs()) {
+                throw new RuntimeException("File could not be created!");
+            }
+        }
     }
 
     public void load() {

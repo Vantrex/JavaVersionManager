@@ -32,8 +32,8 @@ public class AmazonCorrettoOpenJDK implements ProviderParser {
             } else {
                 fileFormat = ".tar.gz";
             }
-            for (Object o : object.getJSONArray("versions")) {
-                final Integer versionNumber = (Integer) o;
+            for (Object version : object.getJSONArray("versions")) {
+                final Integer versionNumber = (Integer) version;
                 final String url = String.format(baseUrl,  versionNumber, arch, os, fileFormat, fileFormat);
                 this.versions.add(new VersionImpl(String.valueOf(versionNumber), "Amazon-Corretto", os, arch, url));
             }

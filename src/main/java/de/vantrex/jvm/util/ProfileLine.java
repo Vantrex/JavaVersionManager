@@ -6,7 +6,6 @@ public class ProfileLine {
 
     private final int index;
     private String content;
-    private LineType lineType;
 
     public ProfileLine(int index, String content) {
         this.index = index;
@@ -15,14 +14,6 @@ public class ProfileLine {
 
     public int getIndex() {
         return index;
-    }
-
-    public void setLineType(LineType lineType) {
-        this.lineType = lineType;
-    }
-
-    public LineType getLineType() {
-        return lineType;
     }
 
     public String getContent() {
@@ -45,11 +36,4 @@ public class ProfileLine {
     public int hashCode() {
         return Objects.hash(index, content);
     }
-
-    public enum LineType {
-        JAVA_HOME,
-        BIN_PATH,
-        EXPORT
-    }
-
 }

@@ -1,7 +1,11 @@
 package de.vantrex.jvm.option.registry;
 
 import de.vantrex.jvm.option.RegisteredOption;
-import de.vantrex.jvm.option.handler.impl.*;
+import de.vantrex.jvm.option.handler.impl.CurrentOptionHandler;
+import de.vantrex.jvm.option.handler.impl.DefaultOptionHandler;
+import de.vantrex.jvm.option.handler.impl.InstallOptionHandler;
+import de.vantrex.jvm.option.handler.impl.ListOptionHandler;
+import de.vantrex.jvm.option.handler.impl.RemoveOptionHandler;
 
 import java.util.HashSet;
 import java.util.Set;

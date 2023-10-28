@@ -7,6 +7,7 @@ import de.vantrex.jvm.http.GistFetcher;
 import de.vantrex.jvm.jdk.Version;
 import de.vantrex.jvm.jdk.provider.AdoptOpenJDK;
 import de.vantrex.jvm.jdk.provider.AmazonCorrettoOpenJDK;
+import de.vantrex.jvm.jdk.provider.ProviderParser;
 import de.vantrex.jvm.platform.IPlatform;
 import de.vantrex.jvm.platform.impl.LinuxPlatform;
 import de.vantrex.jvm.platform.impl.MacPlatform;
@@ -24,7 +25,12 @@ import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.attribute.PosixFilePermission;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class JdkService {
@@ -129,11 +135,13 @@ public class JdkService {
     }
 
     private void loadRemoteVersions() {
-        AdoptOpenJDK adoptOpenJDK = new AdoptOpenJDK(this.gist.getJSONObject("adopt"));
-        adoptOpenJDK.parse();
-        this.versions.addAll(adoptOpenJDK.getVersions());
-        AmazonCorrettoOpenJDK correttoOpenJDK = new AmazonCorrettoOpenJDK(this.gist.getJSONObject("amazon-corretto"));
-        this.versions.addAll(correttoOpenJDK.getVersions());
+        this.parseProvider(new AdoptOpenJDK(this.gist.getJSONObject("adopt")));
+        this.parseProvider(new AmazonCorrettoOpenJDK(this.gist.getJSONObject("amazon")));
+    }
+
+    private void parseProvider(ProviderParser parser) {
+        parser.parse();
+        this.versions.addAll(parser.getVersions());
     }
 
     public void displayLocalJdks() {
@@ -162,7 +170,6 @@ public class JdkService {
 
     public void downloadAndExtract(String fileUrl, String extractionPath) {
         final boolean isZip = fileUrl.endsWith(".zip");
-        File to;
         final String tempFileName = isZip ? "temp.zip" : "temp.tar.gz";
         try {
             URL url = new URL(fileUrl);
@@ -177,20 +184,22 @@ public class JdkService {
 
 
             if (isZip) {
-                to = this.directoryService.extractZipFile(tempFileName, extractionPath);
+                this.directoryService.extractZipFile(tempFileName, extractionPath);
             } else {
-                to = this.directoryService.extractTarGzFile(tempFileName, extractionPath);
+                this.directoryService.extractTarGzFile(tempFileName, extractionPath);
             }
             File tempFile = new File(tempFileName);
             if (tempFile.exists()) {
-                tempFile.delete();
+                if (!tempFile.delete()) {
+                    throw new RuntimeException("Could not delete temp file!");
+                }
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
         final File file = new File(extractionPath);
         if (file.exists() && file.isDirectory() && Objects.requireNonNull(file.list()).length == 1) {
-            to = Arrays.stream(Objects.requireNonNull(file.listFiles())).findFirst().orElse(null);
+            final File to = Arrays.stream(Objects.requireNonNull(file.listFiles())).findFirst().orElse(null);
             if (to != null) {
                 File tempFile = new File(UUID.randomUUID().toString());
                 try {

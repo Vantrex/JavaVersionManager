@@ -10,8 +10,7 @@ public class NativeHook {
     private final EnvLibrary envLibrary;
 
     public NativeHook() {
-        this.envLibrary = Native.loadLibrary( "SystemEnvLib.dll", EnvLibrary.class);
-
+        this.envLibrary = Native.loadLibrary("SystemEnvLib.dll", EnvLibrary.class);
     }
 
     public String getEnvVariable(String name) {
@@ -19,10 +18,10 @@ public class NativeHook {
     }
 
     public void setEnvVariable(String name, String value) {
-        WString wName= new WString(name);
+        WString wName = new WString(name);
         WString wValue = new WString(value);
-      if (!this.envLibrary.SetPermanentEnvironmentVariable(wName, wValue))
-          System.out.println("Something went wrong while setting the env variable!");
+        if (!this.envLibrary.SetPermanentEnvironmentVariable(wName, wValue))
+            System.out.println("Something went wrong while setting the env variable!");
     }
 
     public void restartExplorer() {

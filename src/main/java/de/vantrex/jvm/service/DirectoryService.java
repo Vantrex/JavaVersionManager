@@ -20,7 +20,7 @@ import java.util.zip.ZipInputStream;
 public class DirectoryService {
 
     private final JdkService jdkService;
-    private File installationDir;
+    private final File installationDir;
 
     public DirectoryService(JdkService jdkService) {
         this.jdkService = jdkService;
@@ -51,11 +51,7 @@ public class DirectoryService {
         return installationDir;
     }
 
-    public void setInstallationDir(File installationDir) {
-        this.installationDir = installationDir;
-    }
-
-    public File extractZipFile(String zipFilePath, String extractionPath) {
+    public void extractZipFile(String zipFilePath, String extractionPath) {
         File to = null;
         final File destDir = new File(extractionPath);
         byte[] buffer = new byte[1024];
@@ -91,10 +87,9 @@ public class DirectoryService {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return to;
     }
 
-    public File extractTarGzFile(String tarGzFilePath, String extractionPath) throws IOException {
+    public void extractTarGzFile(String tarGzFilePath, String extractionPath) {
         File to = null;
 
         try (TarArchiveInputStream tarInput = new TarArchiveInputStream(new GZIPInputStream(Files
@@ -125,22 +120,16 @@ public class DirectoryService {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        File file = new File(extractionPath);
-        System.out.println("file: " + file);
-        return file;
     }
 
     private File newFile(File destinationDir, ZipEntry zipEntry) throws IOException {
         File destFile = new File(destinationDir, zipEntry.getName());
-
         String destDirPath = destinationDir.getCanonicalPath();
         String destFilePath = destFile.getCanonicalPath();
 
         if (!destFilePath.startsWith(destDirPath + File.separator)) {
             throw new IOException("Entry is outside of the target dir: " + zipEntry.getName());
         }
-
         return destFile;
     }
-
 }

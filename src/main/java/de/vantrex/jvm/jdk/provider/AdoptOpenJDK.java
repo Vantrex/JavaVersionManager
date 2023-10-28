@@ -58,6 +58,4 @@ public class AdoptOpenJDK implements ProviderParser {
     public Set<Version> getVersions() {
         return this.versions;
     }
-
-
 }
