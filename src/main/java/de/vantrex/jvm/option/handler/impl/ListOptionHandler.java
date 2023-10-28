@@ -13,6 +13,7 @@ public class ListOptionHandler implements OptionHandler {
             jdkService.displayLocalJdks();
             return true;
         }
+        System.out.println("displaying remote jdks");
         jdkService.displayRemoteJdks();
         return true;
     }
