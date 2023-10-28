@@ -13,8 +13,6 @@ public class JavaPathMatcher {
 
     public static boolean isJdkPath(final String path) {
         final Matcher matcher = JDK_PATH_PATTERN.matcher(path);
-        final boolean matches = matcher.matches();
-        System.out.println(path + " " + matches);
-        return matches;
+        return matcher.matches();
     }
 }

@@ -1,5 +1,6 @@
 package de.vantrex.jvm.util;
 
+@SuppressWarnings("unused")
 public class Tuple<L, R> {
 
     private final L left;

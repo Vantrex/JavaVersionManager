@@ -114,7 +114,6 @@ public class WindowsPlatform implements IPlatform {
     }
 
     private void copyNativeDll() {
-
         String resourceName = "SystemEnvLib.dll";
         final File targetFile = new File(this.configurationProvider.getConfigFolder(), resourceName);
         if (targetFile.exists()) {
@@ -125,7 +124,6 @@ public class WindowsPlatform implements IPlatform {
         }
         try (InputStream inputStream = JdkService.class.getResourceAsStream("/" + resourceName);
              OutputStream outputStream = Files.newOutputStream(targetFile.toPath())) {
-
             byte[] buffer = new byte[1024];
             int bytesRead;
             //noinspection DataFlowIssue
@@ -136,5 +134,4 @@ public class WindowsPlatform implements IPlatform {
             throw new RuntimeException(e);
         }
     }
-
 }

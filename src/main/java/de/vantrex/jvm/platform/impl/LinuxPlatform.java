@@ -11,10 +11,14 @@ import de.vantrex.jvm.util.JavaPathMatcher;
 import de.vantrex.jvm.util.ProfileLine;
 import org.apache.commons.compress.utils.Lists;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class LinuxPlatform implements IPlatform {
 
@@ -40,10 +44,6 @@ public class LinuxPlatform implements IPlatform {
         try {
             final List<ProfileLine> lines = this.getCurrentDotBashrcContent();
             final List<ProfileLine> toEdit = this.findLinesToEditInDotBashrcFile(lines);
-            System.out.println(lines.stream().map(ProfileLine::getContent).collect(Collectors.toList()));
-            System.out.println("^lines");
-            System.out.println(toEdit);
-            System.out.println("^toEdit");
             final String javaHomeEnv = "JAVA_HOME=" + directoryService.getInstallationDir() + File.separator + version.toDirString();
             replaceDotProfileAndSubmit(lines, toEdit, javaHomeEnv);
         } catch (IOException e) {
@@ -64,7 +64,7 @@ public class LinuxPlatform implements IPlatform {
         }
     }
 
-    private void replaceDotProfileAndSubmit(List<ProfileLine> lines, List<ProfileLine> toEdit, String javaHomeEnv) throws IOException {
+    private void replaceDotProfileAndSubmit(List<ProfileLine> lines, List<ProfileLine> toEdit, String javaHomeEnv) {
         for (ProfileLine line : lines) {
             if (line.getContent().startsWith("export ")) // we do not have to edit exports, they should be in the correct order tho. TODO: edit all of them?
                 continue;
@@ -73,11 +73,6 @@ public class LinuxPlatform implements IPlatform {
             }
         }
         writeToBashrc(lines);
-//        CommandRunner.handleBashCommand("bash", new String[]{"-c", "export", javaHomeEnv});
- //       CommandRunner.handleBashCommand("bash", new String[]{"-c", "export", "PATH=" + "\"$JAVA_HOME" + File.separator + "bin:$PATH\""});
-        for (String bash : CommandRunner.handleBashCommand("bash", new String[]{"-c", "java", "-version"})) {
-            System.out.println(bash);
-        }
     }
 
 
@@ -87,13 +82,12 @@ public class LinuxPlatform implements IPlatform {
         boolean changedFile = false;
         try {
             List<String> output = CommandRunner.handleBashCommand("which", new String[]{"java"});
-            System.out.println(output);
             if (output.isEmpty()) {
                 throw new RuntimeException("No java installation found!");
             }
             final File javaDir = findJavaDir(output.get(0));
             if (!hasJavaHome()) {
-                System.out.println("found no default java home!");
+                System.out.println("Found no default java home!");
                 exportDefaultJavaHome(javaDir.getParentFile().getAbsolutePath());
             }
 
@@ -234,11 +228,8 @@ public class LinuxPlatform implements IPlatform {
                     }
                     final ProfileLine lineBeneathIndex = profileLines.get(j);
                     final String contentBeneath = lineBeneathIndex.getContent();
-                    if (contentBeneath.startsWith("PATH=\"$JAVA_HOME")) {
-                        lineBeneathIndex.setLineType(ProfileLine.LineType.BIN_PATH);
-                    } else if (contentBeneath.equals("export PATH") || contentBeneath.equals("export JAVA_HOME")) {
-                        lineBeneathIndex.setLineType(ProfileLine.LineType.EXPORT);
-                    } else {
+                    if (!(contentBeneath.startsWith("PATH=\"$JAVA_HOME") ||
+                            contentBeneath.equals("export PATH") || contentBeneath.equals("export JAVA_HOME"))) {
                         continue lineLoop;
                     }
                     toEdit.add(lineBeneathIndex);

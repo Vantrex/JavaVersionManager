@@ -27,15 +27,15 @@ public class RegisteredOption {
         return aliases;
     }
 
+    public OptionHandler getHandler() {
+        return handler;
+    }
+
     public int getMinLength() {
         return minLength;
     }
 
     public int getMaxLength() {
         return maxLength;
-    }
-
-    public OptionHandler getHandler() {
-        return handler;
     }
 }

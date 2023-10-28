@@ -6,7 +6,7 @@ public class VersionImpl implements Version {
     private final String jdkProvider;
     private final String operatingSystem;
     private final String systemArchitecture;
-    private String downloadUrl;
+    private final String downloadUrl;
 
     public VersionImpl(String version, String jdkProvider, String operatingSystem, String systemArchitecture, String downloadUrl) {
         this.version = version;
@@ -37,7 +37,6 @@ public class VersionImpl implements Version {
     }
 
 
-
     @Override
     public String downloadUrl() {
         return this.downloadUrl;
@@ -48,12 +47,8 @@ public class VersionImpl implements Version {
         return this.jdkProvider + "-" + version;
     }
 
-    public void setDownloadUrl(String downloadUrl) {
-        this.downloadUrl = downloadUrl;
-    }
-
     @Override
     public String toString() {
-        return jdkProvider + "-" + version + " for " + operatingSystem + " " + systemArchitecture;
+        return jdkProvider() + "-" + version() + " for " + operatingSystem() + " " + systemArchitecture();
     }
 }

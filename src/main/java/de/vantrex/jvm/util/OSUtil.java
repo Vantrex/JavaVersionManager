@@ -73,5 +73,4 @@ public class OSUtil {
         }
         return new File(jarFilePath).getParent();
     }
-
 }
