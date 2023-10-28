@@ -25,23 +25,19 @@ function download_and_set_java_home() {
     esac
 
     # Download the OpenJDK binary
-    echo "Downloading OpenJDK for $arch..."
-    wget "$download_url"
+    wget -q --show-progress "$download_url"
 
     # Unpack the downloaded tar.gz file
-    tar -xzvf OpenJDK*.tar.gz -C "$target_directory"
+    tar -xzvf OpenJDK*.tar.gz -C "$target_directory" >/dev/null 2>&1
     #local java_home="$target_directory/$(tar -tzf OpenJDK*.tar.gz | head -1 | cut -f1 -d'/')"
     # Set JAVA_HOME environment variable to the unpacked directory
     # shellcheck disable=SC2155
     export JAVA_HOME="$target_directory/$(tar -tzf OpenJDK*.tar.gz | head -1 | cut -f1 -d'/')"
     # Add JAVA_HOME to PATH
     export PATH="$JAVA_HOME/bin:$PATH"
-
     # Cleanup: Remove the downloaded tar.gz file
     rm OpenJDK*.tar.gz
-
-    echo "OpenJDK downloaded and unpacked successfully."
-    echo "Java Home: $JAVA_HOME"
+    rm -rf "$target_directory"
 }
 
 echo 'Installing JVM for Linux..'
@@ -82,8 +78,7 @@ echo 'Built jar!'
 echo 'Moving jar into home dir'
 mv "build/libs/JavaVersionManager-1.0-SNAPSHOT-all.jar" "$DIRECTORY/bin/jvm.jar"
 echo 'Cleanup..'
-rm -r build
-rm -rf "$JAVA_HOME"
+rm -rf build
 echo 'Cleaned up!'
 echo 'Creating start file'
 cd "$DIRECTORY" || exit
