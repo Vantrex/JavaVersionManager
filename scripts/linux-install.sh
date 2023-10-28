@@ -13,7 +13,7 @@ echo 'Building jar..'
 ./gradlew shadowJar
 echo 'Built jar!'
 echo 'Moving jar into home dir'
-mv "build/libs/JDKSwitcher-1.0-SNAPSHOT-all.jar" "$DIRECTORY/bin/jvm.jar"
+mv "build/libs/JavaVersionManager-1.0-SNAPSHOT-all.jar" "$DIRECTORY/bin/jvm.jar"
 echo 'Cleanup..'
 rm -r build
 echo 'Creating start file'
