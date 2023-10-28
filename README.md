@@ -4,7 +4,7 @@
 ***JavaVersionManager*** is a simple tool to manage multiple JDK versions your system. It allows you to easily switch between versions of Java.
 
 ## IMPORTANT:
-****This project is still in development, *MacOS* is not supported yet and *Windows* does not have a working installer yet.****
+****This project is still in development, *macOS* is not supported yet and *Windows* does not have a working installer yet.****
 
 
 ## How To Use
@@ -39,9 +39,9 @@ Use **jvm current** to see what jdk you are currently using
 To compile JVM you need at least JDK 8 and an internet connection.
 (Be aware that the lowest jdk version you can install is the version you are using to compile JVM)
 
-To install JavaVersionManager, you can use the standalone installer script. This script will download the latest version of the JVM and install it to your system. The script will also add the JVM to your PATH variable so you can use it from anywhere.
+To install JavaVersionManager, you can use the standalone installer script. This script will download the latest version of the JVM and install it to your system. The script will also add the JVM to your PATH variable, so you can use it from anywhere.
 
-Quick Install (Right now only working on linux, working on the windows version)
+Quick Install (Right now only working on linux, working on the Windows version)
 ```bash
     $ wget https://raw.githubusercontent.com/Vantrex/JavaVersionManager/master/standalone-installer/install-jvm.sh && chmod 777 install-jvm.sh && ./install-jvm.sh
 ```
