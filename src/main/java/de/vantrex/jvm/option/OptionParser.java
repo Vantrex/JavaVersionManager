@@ -18,8 +18,10 @@ public class OptionParser {
 
     public OptionParser(final String[] args) {
         this.args = args;
-        this.optionArguments = new String[args.length - 1];
-        System.arraycopy(args, 1, optionArguments, 0, optionArguments.length);
+        this.optionArguments = new String[args.length - (args.length == 0 ? 0 : 1)];
+        if (args.length > 1) {
+            System.arraycopy(args, 1, optionArguments, 0, optionArguments.length);
+        }
         this.handleArguments();
     }
 
