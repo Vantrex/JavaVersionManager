@@ -35,4 +35,14 @@ PATH="$JVM_DIR/bin:$PATH"' >> "$HOME/.profile"
 fi
 source "$HOME/.profile"
 echo 'Modified .profile!'
+
+if ! grep -q '# JVM Alias' "$HOME/.bashrc"; then
+  echo 'Adding ". jvm" alias..'
+  echo '
+# JVM Alias
+alias jvm=". jvm"' >> "$HOME/.bashrc"
+echo "Added alias!"
+fi
+
+
 echo 'Installed JVM for Linux! Use "jvm" to run.'
