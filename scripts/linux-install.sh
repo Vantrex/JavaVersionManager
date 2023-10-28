@@ -73,7 +73,7 @@ else
 fi
 
 echo 'Downloading OpenJDK..'
-JAVA_DIR=$(download_and_set_java_home)
+download_and_set_java_home
 echo 'Downloaded OpenJDK!'
 echo 'Building jar..'
 #./gradlew shadowJar -q &> /dev/ null
