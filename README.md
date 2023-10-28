@@ -34,7 +34,7 @@ Use **jvm current** to see what jdk you are currently using
 ## How To Build
 
 ---
-To compile JVM you need at least JDK 8, and an internet connection.
+To compile JVM you need at least JDK 8 and an internet connection.
 (Be aware that the lowest jdk version you can install is the version you are using to compile JVM)
 
 To install JavaVersionManager, you can use the standalone installer script. This script will download the latest version of the JVM and install it to your system. The script will also add the JVM to your PATH variable so you can use it from anywhere.
