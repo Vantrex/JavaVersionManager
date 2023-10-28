@@ -24,9 +24,10 @@ fi' > 'jvm'
 chmod 777 jvm
 echo 'Modifying .bashrc..'
 # shellcheck disable=SC2016
-if ! grep -q '# This loads jvm' "$HOME/.jvm"; then
+if ! grep -q "# This loads jvm $HOME/.jvm"; then
     echo 'export JVM_DIR="$HOME/.jvm"
 [ -s "$JVM_DIR/jvm" ] && \. "JVM_DIR/jvm" # This loads jvm' >> "$HOME/.bashrc"
 fi
+echo 'Modified .bashrc!'
 source "$HOME/.bashrc"
 echo 'Installed JVM for Linux! Use "jvm" to run.'
