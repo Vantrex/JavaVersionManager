@@ -1,7 +1,11 @@
 #!/bin/bash
 echo 'Installing JVM for Linux..'
-if [ ! -e "$HOME/jvm" ]; then
-    mkdir ~/jvm
+DIRECTORY="$HOME/.jvm"
+if [ ! -e "$DIRECTORY" ]; then
+    mkdir "$DIRECTORY"
+fi
+if [ ! -e "$DIRECTORY/bin" ]; then
+    mkdir "$DIRECTORY/bin"
 fi
 cd ".."
 echo 'Building jar..'
@@ -9,15 +13,15 @@ echo 'Building jar..'
 ./gradlew shadowJar
 echo 'Built jar!'
 echo 'Moving jar into home dir'
-mv "build/libs/JDKSwitcher-1.0-SNAPSHOT-all.jar" "$HOME/jvm/jvm.jar"
+mv "build/libs/JDKSwitcher-1.0-SNAPSHOT-all.jar" "$DIRECTORY/bin/jvm.jar"
 echo 'Cleanup..'
 rm -r build
 echo 'Creating start file'
-cd "$HOME/jvm" || exit
+cd "$DIRECTORY" || exit
 touch "test"
 # shellcheck disable=SC2016
 echo '#!/bin/sh
-java -jar $HOME/jvm/jvm.jar $@
+java -jar '"$DIRECTORY"'/bin/jvm.jar $@
 if [ "$#" -ge 1 ]; then
       source ~/.profile
 fi' > 'jvm'
