@@ -18,7 +18,6 @@ echo 'Cleanup..'
 rm -r build
 echo 'Creating start file'
 cd "$DIRECTORY" || exit
-touch "test"
 # shellcheck disable=SC2016
 echo '#!/bin/sh
 java -jar '"$DIRECTORY"'/bin/jvm.jar $@
@@ -31,7 +30,7 @@ echo 'Modifying .bashrc..'
 if ! grep -q '# This loads jvm' "$HOME/.bashrc"; then
     echo '
 export JVM_DIR="$HOME/.jvm"
-[ -s "$JVM_DIR/jvm" ] && \. "JVM_DIR/jvm" # This loads jvm' >> "$HOME/.bashrc"
+[ -s "$JVM_DIR/jvm" ] && \. "$JVM_DIR/jvm" # This loads jvm' >> "$HOME/.bashrc"
 fi
 echo 'Modified .bashrc!'
 source "$HOME/.bashrc"
